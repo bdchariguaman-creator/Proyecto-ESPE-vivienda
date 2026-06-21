@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensajes - SafeStay ESPE</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/forms.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SafeStay ESPE - Estudiante</div>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Volver</a></li>
+                <li><a href="../index.html">Salir</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="dashboard.html">Buscar Alojamiento</a></li>
+                <li><a href="#">Favoritos</a></li>
+                <li class="active"><a href="mensajes.html">Mis Mensajes</a></li>
+                <li><a href="#">Mi Perfil</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content" style="display: flex; gap: 2rem;">
+            <div style="width: 300px; border-right: 1px solid var(--border-color); padding-right: 1rem;">
+                <h3 style="margin-bottom: 1.5rem;">Conversaciones</h3>
+                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #f0f0f0; margin-bottom: 0.5rem; cursor: pointer;">
+                    <strong>Roberto Suárez</strong>
+                    <p style="font-size: 0.8rem; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Perfecto, le espero a las 18h en la dirección indicada.</p>
+                </div>
+                <div style="border: 1px solid var(--border-color); padding: 1rem; margin-bottom: 0.5rem; cursor: pointer;">
+                    <strong>Carmen López</strong>
+                    <p style="font-size: 0.8rem; color: #666;">La habitación sigue disponible.</p>
+                </div>
+            </div>
+
+            <div style="flex: 1; display: flex; flex-direction: column;">
+                <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1rem;">
+                    <h3>Roberto Suárez</h3>
+                    <p style="font-size: 0.8rem; color: #666;">Ref: Habitación compartida - Sangolquí Centro</p>
+                </div>
+                
+                <div style="flex: 1; background: #fafafa; padding: 1rem; margin-bottom: 1rem; overflow-y: auto;">
+                    <div style="text-align: right; margin-bottom: 1rem;">
+                        <span style="background: var(--primary-color); color: #fff; padding: 0.5rem 1rem; display: inline-block;">¿Aún está disponible la habitación? ¿Podría visitarla hoy?</span>
+                    </div>
+                    <div style="text-align: left; margin-bottom: 1rem;">
+                        <span style="background: #e0e0e0; padding: 0.5rem 1rem; display: inline-block;">Sí, la habitación sigue disponible. ¿A qué hora le gustaría visitarla?</span>
+                    </div>
+                    <div style="text-align: right; margin-bottom: 1rem;">
+                        <span style="background: var(--primary-color); color: #fff; padding: 0.5rem 1rem; display: inline-block;">A las 18h estaría bien para mí.</span>
+                    </div>
+                    <div style="text-align: left; margin-bottom: 1rem;">
+                        <span style="background: #e0e0e0; padding: 0.5rem 1rem; display: inline-block;">Perfecto, le espero a las 18h en la dirección indicada.</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <input type="text" class="form-control" placeholder="Escribe un mensaje...">
+                    <button class="btn-primary">ENVIAR</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

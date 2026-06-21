@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceder - SafeStay ESPE</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/forms.css">
+</head>
+<body style="display: flex; flex-direction: column; height: 100vh;">
+    <header>
+        <div class="logo">SafeStay ESPE</div>
+        <nav><a href="index.html">Volver</a></nav>
+    </header>
+
+    <main style="flex: 1; display: flex; align-items: center; justify-content: center;">
+        <div style="border: 1px solid var(--border-color); background: #fff; width: 400px; padding: 2rem; text-align: center;">
+            <h2 style="margin-bottom: 0.5rem;">SafeStay ESPE</h2>
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 1.5rem;">Plataforma de alojamiento estudiantil</p>
+            
+            <div style="display: flex; margin-bottom: 1.5rem;">
+                <button class="btn-primary" style="flex: 1; border-radius: 0;">ESTUDIANTE</button>
+                <button class="btn-outline" style="flex: 1; border-radius: 0;">ARRENDADOR</button>
+            </div>
+
+            <form style="text-align: left;">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 0.5rem;">CORREO ELECTRÓNICO</label>
+                    <input type="email" placeholder="correo@espe.edu.ec" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color);">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-size: 0.8rem; margin-bottom: 0.5rem;">CONTRASEÑA</label>
+                    <input type="password" placeholder="12345678" style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color);">
+                </div>
+                <button type="button" class="btn-primary" style="width: 100%;" onclick="window.location.href='estudiante/dashboard.html'">INGRESAR</button>
+            </form>
+            
+            <p style="margin-top: 1rem; font-size: 0.8rem; text-align: center;">
+                <a href="#" style="color: var(--text-color);">Olvidé mi contraseña</a>
+            </p>
+            
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem;">
+                ¿No tienes una cuenta? <a href="registro.html" style="color: var(--primary-color); font-weight: bold;">Regístrate aquí</a>
+            </p>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Estudiante - SafeStay ESPE</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SafeStay ESPE - Estudiante</div>
+        <nav>
+            <ul>
+                <li><a href="#">Ayuda</a></li>
+                <li><a href="#">Mensajes</a></li>
+                <li><a href="../index.html">Salir</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul>
+                <li class="active"><a href="dashboard.html">Buscar Alojamiento</a></li>
+                <li><a href="#">Favoritos</a></li>
+                <li><a href="mensajes.html">Mis Mensajes</a></li>
+                <li><a href="#">Mi Perfil</a></li>
+                <li><a href="#">Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>12</h3>
+                    <p>Búsquedas Guardadas</p>
+                </div>
+                <div class="stat-card">
+                    <h3>5</h3>
+                    <p>Favoritos Guardados</p>
+                </div>
+                <div class="stat-card">
+                    <h3>3</h3>
+                    <p>Mensajes sin leer</p>
+                </div>
+                <div class="stat-card">
+                    <h3>1</h3>
+                    <p>Visita Programada</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 2rem;">
+                <aside style="width: 250px;">
+                    <h4 style="margin-bottom: 1rem;">FILTROS DE BÚSQUEDA</h4>
+                    
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.8rem;">RANGO DE PRECIO</label>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <input type="number" placeholder="Min $" style="width: 50%; padding: 0.25rem;">
+                            <input type="number" placeholder="Max $" style="width: 50%; padding: 0.25rem;">
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.8rem;">DISTANCIA A LA ESPE</label>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">
+                            <label style="display: block;"><input type="radio" name="dist"> < 1km</label>
+                            <label style="display: block;"><input type="radio" name="dist"> < 3km</label>
+                            <label style="display: block;"><input type="radio" name="dist"> Cualquier distancia</label>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <label style="font-size: 0.8rem;">SERVICIOS</label>
+                        <div style="margin-top: 0.5rem; font-size: 0.9rem;">
+                            <label style="display: block;"><input type="checkbox"> WiFi</label>
+                            <label style="display: block;"><input type="checkbox"> Agua Caliente</label>
+                            <label style="display: block;"><input type="checkbox"> Luz Incluida</label>
+                        </div>
+                    </div>
+
+                    <button class="btn-primary" style="width: 100%;">APLICAR FILTROS</button>
+                </aside>
+
+                <div style="flex: 1;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                        <span><strong>24 resultados</strong> encontrados</span>
+                        <select style="padding: 0.25rem;">
+                            <option>Recomendados</option>
+                            <option>Menor Precio</option>
+                        </select>
+                    </div>
+
+                    <div class="property-list">
+                        <div class="property-card">
+                            <div class="wireframe-img">FOTO</div>
+                            <div class="property-details">
+                                <h3 style="font-size: 1.1rem;">Habitación compartida - Sangolquí Centro</h3>
+                                <p style="font-size: 0.8rem; color: #666;">⭐ 4.8 (12 reseñas) - Verificado</p>
+                                <div style="margin-top: 1rem;">
+                                    <span style="border: 1px solid #ccc; padding: 2px 5px; font-size: 0.8rem;">WiFi</span>
+                                    <span style="border: 1px solid #ccc; padding: 2px 5px; font-size: 0.8rem;">Agua</span>
+                                </div>
+                            </div>
+                            <div class="property-actions">
+                                <button class="btn-outline" style="padding: 0.25rem 0.5rem;">♡</button>
+                                <div style="text-align: right;">
+                                    <strong style="display: block; font-size: 1.2rem;">$120/mes</strong>
+                                    <button class="btn-primary" onclick="window.location.href='detalle.html'">VER</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="property-card">
+                            <div class="wireframe-img">FOTO</div>
+                            <div class="property-details">
+                                <h3 style="font-size: 1.1rem;">Departamento 2D - Barrio El Ejido</h3>
+                                <p style="font-size: 0.8rem; color: #666;">⭐ 5.0 (8 reseñas) - Verificado</p>
+                            </div>
+                            <div class="property-actions">
+                                <button class="btn-outline" style="padding: 0.25rem 0.5rem;">♡</button>
+                                <div style="text-align: right;">
+                                    <strong style="display: block; font-size: 1.2rem;">$320/mes</strong>
+                                    <button class="btn-primary" onclick="window.location.href='detalle.html'">VER</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="width: 300px; background: #eee; border: 1px solid var(--border-color);">
+                    <div class="wireframe-img" style="height: 100%; border: none;">MAPA INTERACTIVO</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

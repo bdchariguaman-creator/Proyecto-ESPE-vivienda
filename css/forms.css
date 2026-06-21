@@ -1,0 +1,52 @@
+/* css/forms.css */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    font-family: inherit;
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.checkbox-item label {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.file-drop-zone {
+    border: 2px dashed var(--border-color);
+    background-color: #f9f9f9;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 1rem;
+}
+
+.file-drop-zone:hover {
+    background-color: #f0f0f0;
+    border-color: var(--primary-color);
+}

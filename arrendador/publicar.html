@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicar Propiedad - SafeStay ESPE</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/forms.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SafeStay ESPE</div>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Cancelar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul>
+                <li><a href="dashboard.html">Mis Propiedades</a></li>
+                <li class="active"><a href="publicar.html">Agregar Propiedad</a></li>
+                <li><a href="#">Mensajes</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content" style="max-width: 800px;">
+            <h2 style="margin-bottom: 2rem;">PUBLICAR PROPIEDAD</h2>
+
+            <form>
+                <div class="form-group">
+                    <label class="form-label">TÍTULO DE LA PROPIEDAD</label>
+                    <input type="text" class="form-control" placeholder="Ej. Habitación individual cerca de la ESPE">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">DESCRIPCIÓN</label>
+                    <textarea class="form-control" placeholder="Describe los detalles de la vivienda..."></textarea>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">TIPO DE ALOJAMIENTO</label>
+                        <select class="form-control">
+                            <option>Habitación Compartida</option>
+                            <option>Habitación Individual</option>
+                            <option>Departamento</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">PRECIO MENSUAL ($)</label>
+                        <input type="number" class="form-control" placeholder="120">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">SERVICIOS INCLUIDOS</label>
+                    <div class="checkbox-grid">
+                        <div class="checkbox-item"><label><input type="checkbox"> WiFi</label></div>
+                        <div class="checkbox-item"><label><input type="checkbox"> Agua Caliente</label></div>
+                        <div class="checkbox-item"><label><input type="checkbox"> Luz</label></div>
+                        <div class="checkbox-item"><label><input type="checkbox"> Amoblado</label></div>
+                        <div class="checkbox-item"><label><input type="checkbox"> Lavandería</label></div>
+                        <div class="checkbox-item"><label><input type="checkbox"> Cocina</label></div>
+                    </div>
+                </div>
+
+                <hr style="margin: 2rem 0; border: none; border-top: 1px solid var(--border-color);">
+
+                <h3 style="margin-bottom: 1rem;">VERIFICACIÓN DE DOCUMENTOS</h3>
+                <p style="font-size: 0.9rem; color: #666; margin-bottom: 1.5rem;">Para mantener la seguridad de la plataforma, debes subir los siguientes documentos.</p>
+
+                <div class="form-group">
+                    <label class="form-label">CÉDULA DE IDENTIDAD (Frente y Reverso)</label>
+                    <div class="file-drop-zone">
+                        <p>Arrastra y suelta tu archivo aquí o</p>
+                        <button type="button" class="btn-outline" style="margin-top: 0.5rem;">SELECCIONAR ARCHIVO</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ESCRITURA O PAGO DE PREDIAL</label>
+                    <div class="file-drop-zone">
+                        <p>Arrastra y suelta tu archivo aquí o</p>
+                        <button type="button" class="btn-outline" style="margin-top: 0.5rem;">SELECCIONAR ARCHIVO</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 3rem;">
+                    <button type="button" class="btn-outline">GUARDAR PROGRESO</button>
+                    <button type="button" class="btn-primary" onclick="window.location.href='dashboard.html'">ENVIAR PARA APROBACIÓN</button>
+                </div>
+            </form>
+        </main>
+    </div>
+</body>
+</html>

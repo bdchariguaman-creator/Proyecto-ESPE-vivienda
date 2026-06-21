@@ -1,0 +1,157 @@
+:root {
+    --primary-color: #1a1a24;
+    --bg-color: #f5f5f5;
+    --border-color: #cccccc;
+    --text-color: #333333;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    line-height: 1.6;
+}
+
+header {
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+    background-color: #ffffff;
+}
+
+/* Utilidades para wireframes */
+.wireframe-img {
+    background-color: #e0e0e0;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 0.8rem;
+    position: relative;
+}
+.wireframe-img::before, .wireframe-img::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: #ccc;
+}
+.wireframe-img::before { transform: rotate(45deg); }
+.wireframe-img::after { transform: rotate(-45deg); }
+
+/* =========================================
+   MEDIA QUERIES - style.css & forms.css
+   ========================================= */
+
+/* Dispositivos Móviles (< 768px)  */
+@media (max-width: 767px) {
+    /* Encabezado y Navegación */
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Index: Buscador y Mapa Principal */
+    main > section > div[style*="display: flex"] {
+        flex-direction: column !important;
+        text-align: center;
+    }
+
+    main > section > div > div.wireframe-img {
+        width: 100% !important;
+        margin-top: 2rem;
+    }
+
+    /* Index: Grid de Alojamientos Destacados */
+    main > section > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Formularios y Login */
+    div[style*="width: 400px"], 
+    div[style*="width: 450px"] {
+        width: 100% !important;
+        padding: 1rem !important;
+    }
+
+    /* Formularios a dos columnas (Publicar) */
+    div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    .checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Tabletas (768px - 1023px)  */
+@media (min-width: 768px) and (max-width: 1023px) {
+    main > section > div[style*="grid-template-columns"] {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    .checkbox-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

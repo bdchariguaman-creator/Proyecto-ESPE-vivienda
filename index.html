@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeStay ESPE</title>
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SafeStay ESPE</div>
+        <nav>
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="estudiante/dashboard.html">Buscar Alojamiento</a></li>
+                <li><a href="arrendador/publicar.html">Publicar</a></li>
+                <li><a href="login.html" class="btn-primary">Acceder</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="padding: 2rem;">
+        <section style="margin-bottom: 3rem;">
+            <input type="text" placeholder="Buscar por ubicación, precio..." style="width: 100%; padding: 1rem; margin-bottom: 2rem; border: 1px solid var(--border-color);">
+            
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>Encuentra tu hogar<br>cerca de la ESPE</h1>
+                    <p>Alojamientos verificados para estudiantes universitarios</p>
+                    <br>
+                    <button class="btn-primary">BUSCAR AHORA</button>
+                    <button class="btn-outline">VER MAPA</button>
+                </div>
+                <div class="wireframe-img" style="width: 400px; height: 250px;">MAPA PREVIEW</div>
+            </div>
+        </section>
+
+        <section>
+            <h3 style="margin-bottom: 1rem;">ALOJAMIENTOS DESTACADOS</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #fff;">
+                    <div class="wireframe-img" style="height: 150px; margin-bottom: 1rem;">FOTO</div>
+                    <h4>Hab. Compartida - Sangolquí</h4>
+                    <p style="font-size: 0.8rem; margin: 0.5rem 0;">⭐ 4.8 (12 reseñas)</p>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <span style="border: 1px solid #ccc; padding: 2px 5px; font-size: 0.7rem;">WiFi</span>
+                        <span style="border: 1px solid #ccc; padding: 2px 5px; font-size: 0.7rem;">Agua</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>$120/mes</strong>
+                        <button class="btn-primary" style="padding: 0.25rem 1rem;">VER</button>
+                    </div>
+                </div>
+                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #fff;">
+                    <div class="wireframe-img" style="height: 150px; margin-bottom: 1rem;">FOTO</div>
+                    <h4>Dept. 2 dorm. - Equipado</h4>
+                    <p style="font-size: 0.8rem; margin: 0.5rem 0;">⭐ 5.0 (8 reseñas)</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+                        <strong>$320/mes</strong>
+                        <button class="btn-primary" style="padding: 0.25rem 1rem;">VER</button>
+                    </div>
+                </div>
+                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #fff;">
+                    <div class="wireframe-img" style="height: 150px; margin-bottom: 1rem;">FOTO</div>
+                    <h4>Cuarto Individual - La Vaquería</h4>
+                    <p style="font-size: 0.8rem; margin: 0.5rem 0;">⭐ Nuevo</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
+                        <strong>$150/mes</strong>
+                        <button class="btn-primary" style="padding: 0.25rem 1rem;">VER</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 SafeStay ESPE - Universidad de las Fuerzas Armadas</p>
+    </footer>
+</body>
+</html>

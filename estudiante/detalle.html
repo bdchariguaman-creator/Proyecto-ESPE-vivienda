@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle de Propiedad - SafeStay ESPE</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SafeStay ESPE</div>
+        <nav>
+            <ul>
+                <li><a href="dashboard.html">Volver a Búsqueda</a></li>
+                <li><a href="../index.html">Salir</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 2rem; height: 400px;">
+            <div class="wireframe-img" style="height: 100%;">FOTO PRINCIPAL</div>
+            <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 1rem;">
+                <div class="wireframe-img">FOTO 2</div>
+                <div class="wireframe-img">FOTO 3</div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 3rem;">
+            <div style="flex: 2;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                    <div>
+                        <h1 style="margin-bottom: 0.5rem;">Habitación compartida - Sangolquí Centro</h1>
+                        <p style="color: #666;">⭐ 4.8 (12 reseñas) - Verificado</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <h2 style="font-size: 2rem;">$120<span style="font-size: 1rem; color: #666;">/mes</span></h2>
+                        <button class="btn-outline">♡ GUARDAR</button>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem; margin-bottom: 1rem;">Descripción</h3>
+                <div class="wireframe-img" style="height: 100px; margin-bottom: 2rem;">TEXTO DESCRIPTIVO</div>
+
+                <h3 style="margin-bottom: 1rem;">Servicios Incluidos</h3>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    <div style="border: 1px solid #ccc; padding: 1rem; text-align: center;">WiFi</div>
+                    <div style="border: 1px solid #ccc; padding: 1rem; text-align: center;">Agua Caliente</div>
+                    <div style="border: 1px solid #ccc; padding: 1rem; text-align: center;">Luz</div>
+                    <div style="border: 1px solid #ccc; padding: 1rem; text-align: center;">Cocina</div>
+                </div>
+
+                <h3 style="margin-bottom: 1rem;">Reseñas</h3>
+                <div style="border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem;">
+                    <p><strong>María G.</strong> ⭐⭐⭐⭐⭐</p>
+                    <p style="font-size: 0.9rem; color: #555;">Excelente lugar, tranquilo y cerca de la ESPE[cite: 42].</p>
+                </div>
+                <div style="border: 1px solid #ccc; padding: 1rem; margin-bottom: 2rem;">
+                    <p><strong>Carlos M.</strong> ⭐⭐⭐⭐</p>
+                    <p style="font-size: 0.9rem; color: #555;">El arrendador es muy atento[cite: 44]. Recomendado.</p>
+                </div>
+            </div>
+
+            <aside style="flex: 1;">
+                <div style="border: 1px solid var(--border-color); padding: 1.5rem; background: #fff; position: sticky; top: 2rem;">
+                    <h3 style="margin-bottom: 1rem;">Información del Arrendador</h3>
+                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                        <div class="wireframe-img" style="width: 50px; height: 50px; border-radius: 50%;">FOTO</div>
+                        <div>
+                            <strong>Roberto Suárez</strong>
+                            <p style="font-size: 0.8rem; color: #666;">✓ Verificado</p>
+                        </div>
+                    </div>
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='mensajes.html'">ENVIAR MENSAJE</button>
+                    <button class="btn-outline" style="width: 100%; margin-bottom: 2rem;">SOLICITAR VISITA</button>
+                    
+                    <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem;">Ubicación</h4>
+                    <div class="wireframe-img" style="height: 150px; margin-bottom: 0.5rem;">MAPA</div>
+                    <p style="font-size: 0.8rem; color: #666;">Av. General Rumiñahui, Sangolquí</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

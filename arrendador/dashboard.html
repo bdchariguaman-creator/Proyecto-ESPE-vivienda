@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Arrendador - SafeStay ESPE</title>
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <header>
+        <div class="logo">SafeStay ESPE - Arrendador</div>
+        <nav>
+            <ul>
+                <li><a href="#">Mensajes</a></li>
+                <li><a href="#">Estadísticas</a></li>
+                <li><a href="../index.html">Salir</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul>
+                <li class="active"><a href="dashboard.html">Mis Propiedades</a></li>
+                <li><a href="publicar.html">Agregar Propiedad</a></li>
+                <li><a href="#">Mensajes</a></li>
+                <li><a href="#">Estadísticas</a></li>
+                <li><a href="#">Perfil</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>3</h3>
+                    <p>Propiedades Activas</p>
+                </div>
+                <div class="stat-card">
+                    <h3>7</h3>
+                    <p>Habitaciones Ocupadas</p>
+                </div>
+                <div class="stat-card">
+                    <h3>5</h3>
+                    <p>Mensajes sin leer</p>
+                </div>
+                <div class="stat-card">
+                    <h3>$840</h3>
+                    <p>Ingresos Este Mes</p>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>MIS PROPIEDADES</h3>
+                <button class="btn-primary" onclick="window.location.href='publicar.html'">+ AGREGAR PROPIEDAD</button>
+            </div>
+
+            <div class="property-list">
+                <div class="property-card">
+                    <div class="wireframe-img">FOTO</div>
+                    <div class="property-details">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Casa Sangolquí - 3 Habitaciones</h4>
+                        <span style="background: #e0e0e0; padding: 2px 8px; font-size: 0.8rem; border: 1px solid #666;">ACTIVO</span>
+                        <p style="font-size: 0.9rem; margin-top: 1rem;">Ingresos: $360/mes</p>
+                    </div>
+                    <div class="property-actions">
+                        <button class="btn-outline" style="width: 120px;">EDITAR</button>
+                        <button class="btn-outline" style="width: 120px; color: red; border-color: red;">DESACTIVAR</button>
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <div class="wireframe-img">FOTO</div>
+                    <div class="property-details">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Departamento El Ejido - 2 dorm.</h4>
+                        <span style="background: #e0e0e0; padding: 2px 8px; font-size: 0.8rem; border: 1px solid #666;">ACTIVO</span>
+                        <p style="font-size: 0.9rem; margin-top: 1rem;">Ingresos: $320/mes</p>
+                    </div>
+                    <div class="property-actions">
+                        <button class="btn-outline" style="width: 120px;">EDITAR</button>
+                        <button class="btn-outline" style="width: 120px; color: red; border-color: red;">DESACTIVAR</button>
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <div class="wireframe-img">FOTO</div>
+                    <div class="property-details">
+                        <h4 style="font-size: 1.1rem; margin-bottom: 0.5rem;">Cuarto La Vaquería</h4>
+                        <span style="background: #fff; padding: 2px 8px; font-size: 0.8rem; border: 1px solid #ccc; color: #666;">INACTIVO</span>
+                        <p style="font-size: 0.9rem; margin-top: 1rem;">Ingresos: $0/mes</p>
+                    </div>
+                    <div class="property-actions">
+                        <button class="btn-outline" style="width: 120px;">EDITAR</button>
+                        <button class="btn-primary" style="width: 120px;">ACTIVAR</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - SafeStay ESPE</title>
+    <link rel="stylesheet" href="css/estilos.css">
+    <link rel="stylesheet" href="css/forms.css">
+</head>
+
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+    <header>
+        <div class="logo">SafeStay ESPE</div>
+        <nav>
+            <a href="login.html" style="margin-right: 1rem; color: var(--text-color); text-decoration: none;">Acceder</a>
+            <a href="index.html" style="color: var(--text-color); text-decoration: none;">Volver al Inicio</a>
+        </nav>
+    </header>
+
+    <main style="flex: 1; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+        <div style="border: 1px solid var(--border-color); background: #fff; width: 450px; padding: 2rem;">
+            <h2 style="text-align: center; margin-bottom: 0.5rem;">Crear Cuenta</h2>
+            <p style="text-align: center; font-size: 0.8rem; color: #666; margin-bottom: 1.5rem;">Únete a la plataforma de alojamiento estudiantil</p>
+            
+            <!-- Selector de Rol -->
+            <div style="display: flex; margin-bottom: 1.5rem;">
+                <button class="btn-primary" style="flex: 1; border-radius: 0;" id="btn-reg-estudiante">ESTUDIANTE</button>
+                <button class="btn-outline" style="flex: 1; border-radius: 0;" id="btn-reg-arrendador">ARRENDADOR</button>
+            </div>
+
+            <form id="form-registro">
+                <!-- Campos Comunes -->
+                <div class="form-group">
+                    <label class="form-label">NOMBRE COMPLETO</label>
+                    <input type="text" class="form-control" placeholder="Ej. Juan Pérez">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">CORREO ELECTRÓNICO</label>
+                    <input type="email" class="form-control" placeholder="correo@espe.edu.ec">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">CONTRASEÑA</label>
+                    <input type="password" class="form-control" placeholder="12345678">
+                </div>
+
+                <!-- Campos específicos de estudiante (RF-001) -->
+                <div id="campos-estudiante">
+                    <div class="form-group">
+                        <label class="form-label">UNIVERSIDAD DE ORIGEN</label>
+                        <input type="text" class="form-control" placeholder="Universidad de las Fuerzas Armadas ESPE" value="Universidad de las Fuerzas Armadas ESPE" readonly style="background-color: #f5f5f5;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">CARRERA</label>
+                        <input type="text" class="form-control" placeholder="Ej. Ingeniería en Software">
+                    </div>
+                </div>
+
+                <!-- Campos específicos de arrendador (RF-002) - Ocultos por defecto -->
+                <div id="campos-arrendador" style="display: none;">
+                    <div class="form-group">
+                        <label class="form-label">TELÉFONO DE CONTACTO</label>
+                        <input type="tel" class="form-control" placeholder="Ej. 0987654321">
+                    </div>
+                    <div style="background-color: #fff9f9; border: 1px solid #ffcccc; padding: 1rem; margin-bottom: 1rem;">
+                        <p style="font-size: 0.8rem; color: #666; margin: 0;"><strong>Importante:</strong> Tu cuenta requerirá verificación de documentos por parte del administrador antes de poder publicar propiedades.</p>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="window.location.href='login.html'">REGISTRARSE</button>
+            </form>
+            
+            <p style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem;">
+                ¿Ya tienes una cuenta? <a href="login.html" style="color: var(--primary-color); font-weight: bold;">Ingresa aquí</a>
+            </p>
+        </div>
+    </main>
+
+    <!-- Script para alternar los campos según el rol seleccionado -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnEst = document.getElementById('btn-reg-estudiante');
+            const btnArr = document.getElementById('btn-reg-arrendador');
+            const camposEst = document.getElementById('campos-estudiante');
+            const camposArr = document.getElementById('campos-arrendador');
+
+            btnEst.addEventListener('click', (e) => {
+                e.preventDefault();
+                btnEst.className = 'btn-primary';
+                btnArr.className = 'btn-outline';
+                camposEst.style.display = 'block';
+                camposArr.style.display = 'none';
+            });
+
+            btnArr.addEventListener('click', (e) => {
+                e.preventDefault();
+                btnArr.className = 'btn-primary';
+                btnEst.className = 'btn-outline';
+                camposArr.style.display = 'block';
+                camposEst.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
