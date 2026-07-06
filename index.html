@@ -1,80 +1,74 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SafeStay ESPE</title>
-    <link rel="stylesheet" href="css/estilos.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RoomiU ESPE | Vivienda estudiantil segura</title>
+  <link rel="stylesheet" href="css/estilos.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 </head>
 <body>
-    <header>
-        <div class="logo">SafeStay ESPE</div>
-        <nav>
-            <ul>
-                <li><a href="#">Inicio</a></li>
-                <li><a href="estudiante/dashboard.html">Buscar Alojamiento</a></li>
-                <li><a href="arrendador/publicar.html">Publicar</a></li>
-                <li><a href="login.html" class="btn-primary">Acceder</a></li>
-            </ul>
-        </nav>
-    </header>
+  <a class="skip-link" href="#contenido">Saltar al contenido</a>
+  <header>
+    <div class="logo">RoomiU <span>ESPE</span></div>
+    <nav aria-label="Navegación principal">
+      <ul>
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="estudiante/dashboard.html">Buscar alojamiento</a></li>
+        <li><a href="arrendador/publicar.html">Publicar</a></li>
+        
+        <li><a href="login.html" class="btn-primary">Acceder</a></li>
+      </ul>
+    </nav>
+  </header>
 
-    <main style="padding: 2rem;">
-        <section style="margin-bottom: 3rem;">
-            <input type="text" placeholder="Buscar por ubicación, precio..." style="width: 100%; padding: 1rem; margin-bottom: 2rem; border: 1px solid var(--border-color);">
-            
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                    <h1>Encuentra tu hogar<br>cerca de la ESPE</h1>
-                    <p>Alojamientos verificados para estudiantes universitarios</p>
-                    <br>
-                    <button class="btn-primary">BUSCAR AHORA</button>
-                    <button class="btn-outline">VER MAPA</button>
-                </div>
-                <div class="wireframe-img" style="width: 400px; height: 250px;">MAPA PREVIEW</div>
-            </div>
-        </section>
+  <main id="contenido">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="badge info">Viviendas verificadas para estudiantes foráneos</span>
+          <h1>Encuentra un hogar seguro cerca de la ESPE</h1>
+          <p>Plataforma web para buscar viviendas estudiantiles, revisar información del alojamiento, contactar arrendadores y gestionar publicaciones con mayor seguridad.</p>
+          <form id="home-search-form" class="search-bar" aria-label="Búsqueda rápida">
+            <input id="home-search" type="search" placeholder="Buscar por sector, precio, servicio o tipo de vivienda">
+            <button class="btn-primary">Buscar ahora</button>
+          </form>
+          <div class="hero-actions">
+            <a class="btn-outline" href="estudiante/dashboard.html">Ver catálogo</a>
+            <a class="btn-outline" href="admin/dashboard.html">Panel administrador</a>
+          </div>
+        </div>
+        <div class="hero-map card">
+          <div id="home-map" class="real-map" aria-label="Mapa de viviendas cercanas a la ESPE"></div>
+        </div>
+      </div>
+    </section>
 
-        <section>
-            <h3 style="margin-bottom: 1rem;">ALOJAMIENTOS DESTACADOS</h3>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #fff;">
-                    <div class="wireframe-img" style="height: 150px; margin-bottom: 1rem;">FOTO</div>
-                    <h4>Hab. Compartida - Sangolquí</h4>
-                    <p style="font-size: 0.8rem; margin: 0.5rem 0;">⭐ 4.8 (12 reseñas)</p>
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                        <span style="border: 1px solid #ccc; padding: 2px 5px; font-size: 0.7rem;">WiFi</span>
-                        <span style="border: 1px solid #ccc; padding: 2px 5px; font-size: 0.7rem;">Agua</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <strong>$120/mes</strong>
-                        <button class="btn-primary" style="padding: 0.25rem 1rem;">VER</button>
-                    </div>
-                </div>
-                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #fff;">
-                    <div class="wireframe-img" style="height: 150px; margin-bottom: 1rem;">FOTO</div>
-                    <h4>Dept. 2 dorm. - Equipado</h4>
-                    <p style="font-size: 0.8rem; margin: 0.5rem 0;">⭐ 5.0 (8 reseñas)</p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
-                        <strong>$320/mes</strong>
-                        <button class="btn-primary" style="padding: 0.25rem 1rem;">VER</button>
-                    </div>
-                </div>
-                <div style="border: 1px solid var(--border-color); padding: 1rem; background: #fff;">
-                    <div class="wireframe-img" style="height: 150px; margin-bottom: 1rem;">FOTO</div>
-                    <h4>Cuarto Individual - La Vaquería</h4>
-                    <p style="font-size: 0.8rem; margin: 0.5rem 0;">⭐ Nuevo</p>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 2rem;">
-                        <strong>$150/mes</strong>
-                        <button class="btn-primary" style="padding: 0.25rem 1rem;">VER</button>
-                    </div>
+    <section class="container">
+      <div style="display:flex;justify-content:space-between;gap:1rem;align-items:end;flex-wrap:wrap;margin-bottom:1rem;">
+        <div>
+          <h2>Alojamientos destacados</h2>
+          <p class="muted">Publicaciones activas, filtrables y con reputación visible.</p>
+        </div>
+        <a href="estudiante/dashboard.html" class="btn-outline">Ver todos</a>
+      </div>
+      <div id="featured-properties" class="property-grid"></div>
+    </section>
+
+    <section class="container">
+            <div class="card">
+                <h2>Cómo funciona RoomiU</h2>
+                <p class="muted">Una plataforma con roles diferenciados para cubrir todo el flujo de arriendo estudiantil, desde la búsqueda hasta el contrato y el pago.</p>
+                <div class="property-grid" style="margin-top:1rem;">
+                    <div class="card compact"><strong>Estudiante</strong><p class="small">Búsqueda, filtros, favoritos, detalle, mensajes, reseñas y reportes.</p></div>
+                    <div class="card compact"><strong>Arrendador</strong><p class="small">Gestión de publicaciones, estado de disponibilidad y bandeja de mensajes.</p></div>
+                    <div class="card compact"><strong>Administrador</strong><p class="small">Verificación de arrendadores, usuarios, reportes y métricas generales.</p></div>
                 </div>
             </div>
         </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2026 SafeStay ESPE - Universidad de las Fuerzas Armadas</p>
-    </footer>
+  </main>
+  <footer class="site-footer"><p>&copy; 2026 RoomiU ESPE - Universidad de las Fuerzas Armadas</p></footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
