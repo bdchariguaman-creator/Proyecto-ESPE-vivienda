@@ -62,9 +62,4 @@ RoomiU/
 - **Módulo 5 – Mensajería:** chat interno entre estudiante y arrendador sin exponer datos de contacto externos (RF-018); bandeja de conversaciones con indicador de no leídos (RF-019); notificación visual (badge) de mensajes nuevos (RF-020).
 - **Módulo 6 – Verificación y administración:** aprobación o rechazo de arrendadores con revisión de los documentos reales subidos, y notificación al usuario en su siguiente inicio de sesión (RF-021); gestión de cuentas (activar, desactivar, eliminar) con motivo obligatorio y registro de auditoría (RF-022); moderación de reportes con opción de mantener, ocultar o eliminar el contenido, y aviso cuando una publicación o reseña acumula varios reportes (RF-023); panel con métricas generales, barras visuales de resumen y nuevos registros por período (RF-024).
 
-## Notas técnicas
 
-- Las contraseñas se almacenan cifradas con bcrypt; nunca en texto plano.
-- Las sesiones son manejadas por el servidor (`express-session`) mediante una cookie firmada; el secreto de firma se genera automáticamente si no se define la variable de entorno `SESSION_SECRET`.
-- El mapa (Leaflet + OpenStreetMap) requiere conexión a internet en el navegador de quien usa la aplicación; el resto del sistema (autenticación, publicaciones, mensajería, reseñas, administración) funciona completamente en local, sin depender de servicios externos.
-- Variables de entorno opcionales: `PORT` (por defecto 3000) y `SESSION_SECRET`.
