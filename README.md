@@ -1,41 +1,70 @@
 # RoomiU ESPE
 
-Plataforma web para la búsqueda y gestión de vivienda estudiantil cerca de la ESPE Latacunga. Frontend en HTML, CSS y JavaScript puro, con persistencia en el navegador (localStorage/sessionStorage) para simular backend y sesiones mientras se implementa el servidor definitivo.
+Plataforma web de vivienda estudiantil para la ESPE Latacunga: búsqueda con mapa geolocalizado, publicación de viviendas con fotos reales, mensajería interna, reseñas con reputación, y verificación administrativa de arrendadores.
 
-## Cómo abrir
+## Arquitectura
 
-1. Descomprime la carpeta `RoomiU`.
-2. Abre `index.html` en el navegador (necesitas conexión a internet para cargar el mapa real de OpenStreetMap/Leaflet).
-3. Para revisar los roles, usa `login.html` o crea una cuenta nueva en `registro.html`.
+- **Backend:** Node.js + Express, con autenticación por sesión de servidor (cookies firmadas) y contraseñas cifradas con bcrypt.
+- **Base de datos:** SQLite real y persistente en disco (`roomiu.sqlite`), accedida mediante el módulo nativo `node:sqlite` incluido en Node.js — no requiere instalar ni compilar ningún motor de base de datos aparte.
+- **Archivos:** las fotos de las publicaciones y los documentos de verificación (cédula, predial, matrícula, récord policial, rol de pagos) se guardan como archivos reales en `uploads/`, servidos por el propio servidor.
+- **Frontend:** HTML, CSS y JavaScript que consumen el API REST del backend mediante `fetch`, sin dependencias de framework.
+- **Mapas:** Leaflet + teselas de OpenStreetMap (requieren conexión a internet en el navegador).
 
-## Accesos de revisión académica
+## Requisitos
 
-- Estudiante: `estudiante@espe.edu.ec` / `123456`
-- Arrendador verificado: `arrendador@roomiu.ec` / `123456`
-- Arrendador pendiente de verificación: `carmen@roomiu.ec` / `123456`
-- Administrador: `admin@roomiu.ec` / `admin123`
+- Node.js 22.5 o superior (usa el módulo `node:sqlite`, disponible desde esa versión).
 
-Puedes borrar los datos de prueba y volver al estado inicial ejecutando `localStorage.clear()` en la consola del navegador y recargando la página.
+## Instalación y ejecución
 
-## Trazabilidad de requerimientos funcionales (RF-001 a RF-025)
+```bash
+cd RoomiU
+npm install
+npm start
+```
 
-- **Módulo 1 – Usuarios y autenticación:** registro diferenciado por rol con validaciones y documentos reales (RF-001, RF-002), login por rol con control de acceso estricto por sesión (RF-003, RF-006), recuperación de contraseña simulada (RF-004), gestión de perfil para estudiante y arrendador (RF-005), cierre de sesión seguro (RF-025).
-- **Módulo 2 – Publicaciones:** creación y edición con fotos reales (2 a 10) y ubicación geolocalizada elegida en un mapa interactivo (RF-007, RF-008), activar/desactivar y eliminar publicaciones (RF-009, RF-010).
-- **Módulo 3 – Búsqueda y visualización:** filtros combinables en tiempo real (RF-011), mapa interactivo real (OpenStreetMap/Leaflet) con marcadores clicables (RF-012), detalle completo de la vivienda (RF-013), favoritos persistentes (RF-014).
-- **Módulo 4 – Reseñas y reputación:** reseñas restringidas a estudiantes con contacto previo (mensaje o visita) con la vivienda (RF-015), promedio automático por vivienda y por arrendador (RF-016), reportes de publicaciones y de reseñas (RF-017).
-- **Módulo 5 – Mensajería:** chat interno estudiante–arrendador (RF-018), gestión de conversaciones con indicador de no leídos (RF-019), notificación visual (badge) de mensajes nuevos (RF-020).
-- **Módulo 6 – Verificación y administración:** aprobación/rechazo de arrendadores con notificación al usuario (RF-021), gestión de cuentas con motivo y registro de auditoría (RF-022), moderación de reportes con opción de eliminar contenido y aviso de reportes múltiples (RF-023), panel con métricas generales incluidos nuevos registros (RF-024).
+El servidor queda escuchando en `http://localhost:3000`. Ábrelo en el navegador.
 
-## Pendiente de implementar (fuera del alcance de este avance)
+La primera vez que se ejecuta, el servidor crea automáticamente el archivo `roomiu.sqlite` con el esquema de tablas y una base de datos de ejemplo. Las siguientes ejecuciones reutilizan esos mismos datos (persisten entre reinicios del servidor).
 
-- Backend real (PHP/Node) y base de datos MySQL/Postgres persistente en servidor.
-- Cifrado de contraseñas con bcrypt y sesiones server-side.
-- Pasarela de pagos real y envío de correos (recuperación de contraseña, notificaciones).
-- Integración institucional para validar matrícula.
-- Aplicación externa de instrumentos SUS y cuestionario de experiencia de usuario.
+Para reiniciar la base de datos a los datos de ejemplo originales:
+
+```bash
+npm run seed:reset
+```
+
+## Cuentas de acceso
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Estudiante | estudiante@espe.edu.ec | 123456 |
+| Arrendador verificado | arrendador@roomiu.ec | 123456 |
+| Arrendador pendiente de verificación | carmen@roomiu.ec | 123456 |
+| Administrador | admin@roomiu.ec | admin123 |
+
+## Estructura del proyecto
+
+```
+RoomiU/
+  server/            Backend (Express, base de datos, rutas del API, subida de archivos)
+    db.js            Esquema SQL y datos de ejemplo
+    routes/          Endpoints REST agrupados por módulo
+  public/            Frontend (HTML, CSS, JS) servido por Express
+  uploads/           Fotos de viviendas y documentos subidos por los usuarios
+  roomiu.sqlite       Base de datos (se crea automáticamente al iniciar)
+```
+
+## Trazabilidad de requerimientos funcionales
+
+- **Módulo 1 – Usuarios y autenticación:** registro diferenciado por rol con validación de campos, correo único y documentos reales de respaldo (RF-001, RF-002); inicio de sesión con verificación de credenciales cifradas y mensajes que no revelan si el correo existe (RF-003); recuperación de contraseña de extremo a extremo con token de un solo uso (RF-004); edición de perfil para estudiante y arrendador sin permitir cambiar el correo (RF-005); control de acceso por rol en cada endpoint del servidor, no solo en la interfaz (RF-006); cierre de sesión que destruye la sesión en el servidor (RF-025).
+- **Módulo 2 – Publicaciones:** alta y edición con 2 a 10 fotos reales subidas al servidor y ubicación elegida en un mapa interactivo (RF-007, RF-008); activar/desactivar sin eliminar (RF-009); eliminación definitiva que conserva las reseñas asociadas en el historial del arrendador (RF-010).
+- **Módulo 3 – Búsqueda y visualización:** filtros combinables (precio, tipo, distancia, servicios, calificación) resueltos en el servidor, con orden por relevancia, precio o distancia (RF-011); mapa interactivo real con marcadores clicables (RF-012); detalle completo con galería de todas las fotos (RF-013); favoritos persistentes en la base de datos, asociados a la cuenta (RF-014).
+- **Módulo 4 – Reseñas y reputación:** solo puede reseñar quien tuvo contacto previo (mensaje o visita) con la vivienda, una reseña por publicación (RF-015); promedio automático por vivienda y por arrendador, recalculado en cada consulta (RF-016); reportes de publicaciones y de reseñas (RF-017).
+- **Módulo 5 – Mensajería:** chat interno entre estudiante y arrendador sin exponer datos de contacto externos (RF-018); bandeja de conversaciones con indicador de no leídos (RF-019); notificación visual (badge) de mensajes nuevos (RF-020).
+- **Módulo 6 – Verificación y administración:** aprobación o rechazo de arrendadores con revisión de los documentos reales subidos, y notificación al usuario en su siguiente inicio de sesión (RF-021); gestión de cuentas (activar, desactivar, eliminar) con motivo obligatorio y registro de auditoría (RF-022); moderación de reportes con opción de mantener, ocultar o eliminar el contenido, y aviso cuando una publicación o reseña acumula varios reportes (RF-023); panel con métricas generales, barras visuales de resumen y nuevos registros por período (RF-024).
 
 ## Notas técnicas
 
-- El mapa usa Leaflet + teselas de OpenStreetMap desde CDN; requiere conexión a internet. Sin conexión, se muestra un mensaje de respaldo en lugar de fallar.
-- Las fotos y documentos se guardan como base64 dentro de `localStorage`, por lo que conviene usar imágenes livianas en las pruebas.
-- Los datos de ejemplo se reinician automáticamente si cambia la estructura interna de la base de datos simulada (clave `roomiu.db.v2`).
+- Las contraseñas se almacenan cifradas con bcrypt; nunca en texto plano.
+- Las sesiones son manejadas por el servidor (`express-session`) mediante una cookie firmada; el secreto de firma se genera automáticamente si no se define la variable de entorno `SESSION_SECRET`.
+- El mapa (Leaflet + OpenStreetMap) requiere conexión a internet en el navegador de quien usa la aplicación; el resto del sistema (autenticación, publicaciones, mensajería, reseñas, administración) funciona completamente en local, sin depender de servicios externos.
+- Variables de entorno opcionales: `PORT` (por defecto 3000) y `SESSION_SECRET`.

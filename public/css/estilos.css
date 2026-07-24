@@ -14,6 +14,20 @@
     --radius: 14px;
     --shadow: 0 12px 30px rgba(17, 24, 39, 0.08);
 }
+:root.dark-mode {
+    --primary-color: #d3d3ff;
+    --primary-soft: #2f2f4f;
+    --accent-color: #7ca6ff;
+    --success-color: #7dd67d;
+    --warning-color: #f0b159;
+    --danger-color: #f87575;
+    --bg-color: #12131a;
+    --card-color: #1f2130;
+    --border-color: #2d3145;
+    --text-color: #e8e9ff;
+    --muted-color: #9ba2c0;
+    --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -25,10 +39,16 @@ body {
     background-color: var(--bg-color);
     line-height: 1.6;
 }
+body.dark-mode {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
 
 body.modal-open { overflow: hidden; }
 
 a { color: var(--primary-color); }
+
+a.dark-mode, .dark-mode a { color: var(--primary-color); }
 
 header {
     background-color: rgba(255,255,255,0.96);
@@ -138,6 +158,11 @@ button:disabled { opacity: .55; cursor: not-allowed; }
 .photo-preview-grid .photo-thumb { position:relative; }
 .photo-preview-grid .remove-photo { position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:var(--danger-color); color:#fff; border:none; font-size:.7rem; cursor:pointer; line-height:1; }
 .property-card .photo-placeholder img, .property-card-mini .photo-placeholder img, .detail-gallery .photo-placeholder img { width:100%; height:100%; object-fit:cover; }
+.gallery-more { position:absolute; inset:0; background:rgba(15,23,42,.55); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; border-radius:inherit; }
+.metric-bars { display:flex; flex-direction:column; gap:.85rem; margin-top:.5rem; }
+.metric-bar-row { display:grid; grid-template-columns: 1fr 2fr auto; gap:.6rem; align-items:center; font-size:.85rem; }
+.bar-track { background:#eef1f6; border-radius:999px; height:10px; overflow:hidden; }
+.bar-fill { height:100%; background: var(--accent-color); border-radius:999px; }
 
 .property-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 .property-card-mini { background:#fff; border:1px solid var(--border-color); border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); display:flex; flex-direction:column; }

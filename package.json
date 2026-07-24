@@ -1,0 +1,19 @@
+{
+  "name": "roomiu-espe",
+  "version": "1.0.0",
+  "description": "RoomiU ESPE - Plataforma de vivienda estudiantil con backend Node.js/Express, base de datos SQLite y autenticacion con contrasenas cifradas.",
+  "main": "server/index.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "seed:reset": "node server/reset-db.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "multer": "^2.0.0"
+  }
+}

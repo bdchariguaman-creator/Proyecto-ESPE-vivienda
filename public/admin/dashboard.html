@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Admin - RoomiU ESPE</title><link rel="stylesheet" href="../css/estilos.css"><link rel="stylesheet" href="../css/dashboard.css"><link rel="stylesheet" href="../css/forms.css"></head>
+<body>
+<header><div class="logo">RoomiU <span>Admin</span></div><nav><ul><li><a href="#" data-logout>Salir</a></li></ul></nav></header>
+<div class="dashboard-container"><aside class="sidebar"><ul><li class="active"><a href="#usuarios">Gestión</a></li><li><a href="#verificacion">Verificar arrendadores</a></li><li><a href="#reportes">Reportes</a></li><li><a href="#auditoria">Auditoría</a></li></ul></aside><main class="main-content"><section id="admin-stats" class="stats-grid"></section><section id="admin-metrics" class="card"></section><section class="admin-grid"><div id="verificacion" class="card"><h2>Solicitudes pendientes</h2><p class="muted">Aprobar o rechazar identidad del arrendador.</p><div id="pending-landlords" style="margin-top:1rem;"></div></div><div id="reportes" class="card"><h2>Reportes recientes</h2><p class="muted">Moderar publicaciones o reseñas reportadas.</p><div id="reports-list" style="margin-top:1rem;"></div></div></section><section id="usuarios" class="card" style="margin-top:1.2rem;"><h2>Gestión de usuarios</h2><div class="table-wrap" style="margin-top:1rem;"><table><thead><tr><th>Nombre</th><th>Rol</th><th>Estado</th><th>Verificación</th><th>Acción</th></tr></thead><tbody id="users-table"></tbody></table></div></section>
+<section id="auditoria" class="card" style="margin-top:1.2rem;"><h2>Historial de acciones administrativas</h2><p class="muted">Registro de motivo y responsable de cada acción sobre usuarios y contenido.</p><div id="audit-log" style="margin-top:1rem;"></div></section>
+</main></div>
+<script src="../js/app.js"></script>
+</body></html>

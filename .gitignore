@@ -1,0 +1,8 @@
+node_modules/
+roomiu.sqlite
+uploads/photos/*
+uploads/docs/*
+!uploads/photos/.gitkeep
+!uploads/docs/.gitkeep
+.env
+*.log
