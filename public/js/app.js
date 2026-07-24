@@ -2,6 +2,8 @@
     'use strict';
 
     const ROOT = location.pathname.includes('/estudiante/') || location.pathname.includes('/arrendador/') || location.pathname.includes('/admin/') ? '../' : '';
+    const THEME_KEY = 'roomiu-theme';
+    const ROLE_LABELS = { estudiante: 'Estudiante', arrendador: 'Arrendador', admin: 'Administrador' };
     const ESPE_LAT = -0.9331, ESPE_LNG = -78.6157;
     let ME = null; // usuario de la sesión activa (se carga una vez por página)
 
@@ -39,35 +41,6 @@
     function pageName() { return location.pathname.split('/').pop() || 'index.html'; }
     function path(name) { return ROOT + name; }
 
-    function getSavedTheme() {
-        return localStorage.getItem('theme') || 'light';
-    }
-    function saveTheme(theme) {
-        localStorage.setItem('theme', theme);
-    }
-    function applyProfileTheme(panel, theme) {
-        if (!panel) return;
-        panel.classList.toggle('dark-buttons', theme === 'dark');
-        const btn = panel.querySelector('.profile-theme-toggle');
-        if (btn) btn.textContent = theme === 'dark' ? 'Tema claro' : 'Tema oscuro';
-    }
-    function createProfileThemeToggle(panel) {
-        if (!panel || panel.querySelector('.profile-theme-toggle')) return;
-        const theme = getSavedTheme();
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'btn-ghost profile-theme-toggle';
-        btn.textContent = theme === 'dark' ? 'Tema claro' : 'Tema oscuro';
-        btn.style.marginBottom = '1rem';
-        btn.addEventListener('click', () => {
-            const nextTheme = panel.classList.contains('dark-buttons') ? 'light' : 'dark';
-            saveTheme(nextTheme);
-            applyProfileTheme(panel, nextTheme);
-        });
-        panel.prepend(btn);
-        applyProfileTheme(panel, theme);
-    }
-
     function toast(message) {
         const t = document.createElement('div'); t.className = 'toast'; t.textContent = message; document.body.appendChild(t);
         setTimeout(() => t.remove(), 2800);
@@ -92,7 +65,30 @@
         ]);
     }
 
-    // ---- Mapa real (Leaflet / OpenStreetMap) ----
+    // ---- Modo oscuro (preferencia guardada en el navegador, aplicada en todas las pantallas) ----
+    function getTheme() { try { return localStorage.getItem(THEME_KEY) === 'dark' ? 'dark' : 'light'; } catch (e) { return 'light'; } }
+    function setTheme(mode) {
+        document.documentElement.setAttribute('data-theme', mode === 'dark' ? 'dark' : 'light');
+        try { localStorage.setItem(THEME_KEY, mode === 'dark' ? 'dark' : 'light'); } catch (e) {}
+        document.querySelectorAll('[data-theme-toggle]').forEach(cb => cb.checked = mode === 'dark');
+    }
+    function themeToggleMarkup() {
+        const dark = getTheme() === 'dark';
+        return `<div class="theme-switch-row"><div><strong>Modo oscuro</strong><p class="small muted">Se aplica en todas las pantallas de RoomiU.</p></div><label class="theme-switch"><input type="checkbox" data-theme-toggle ${dark ? 'checked' : ''}><span class="track"></span></label></div>`;
+    }
+    function wireThemeToggles(container) {
+        (container || document).querySelectorAll('[data-theme-toggle]').forEach(cb => {
+            cb.checked = getTheme() === 'dark';
+            cb.addEventListener('change', () => setTheme(cb.checked ? 'dark' : 'light'));
+        });
+    }
+    function renderUserChip() {
+        const chips = document.querySelectorAll('[data-current-user-chip]'); if (!chips.length) return;
+        if (!ME) { chips.forEach(c => c.innerHTML = ''); return; }
+        const initials = (ME.avatar || ME.name || '?').slice(0, 2).toUpperCase();
+        chips.forEach(c => c.innerHTML = `<span class="avatar-dot">${safe(initials)}</span>${safe(ME.name)} <span class="role-label">· ${ROLE_LABELS[ME.role] || ME.role}</span>`);
+    }
+
     function hasLeaflet() { return typeof window.L !== 'undefined'; }
     function mapFallback(containerId, message) {
         const el = byId(containerId); if (el) el.innerHTML = `<div class="map-fallback">${safe(message || 'Mapa no disponible. Verifica tu conexión a internet.')}</div>`;
@@ -132,13 +128,46 @@
     }
     function openGallery(photos) {
         if (!photos || !photos.length) { modal('Fotos de la vivienda', '<p class="muted">Esta publicación aún no tiene fotos reales cargadas por el arrendador.</p>', [{ label: 'Cerrar', class: 'btn-primary' }]); return; }
-        const html = `<div class="photo-preview-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">${photos.map((src, i) => `<img src="${src}" alt="Foto ${i + 1}" style="height:160px;">`).join('')}</div>`;
-        modal(`Galería · ${photos.length} foto${photos.length === 1 ? '' : 's'}`, html, [{ label: 'Cerrar', class: 'btn-primary' }]);
+        const html = `<div class="gallery-shell">
+            <div class="gallery-stage">
+                <img id="gallery-current" src="${photos[0]}" alt="Foto 1">
+            </div>
+            <div class="gallery-controls">
+                <button class="btn-outline" type="button" data-gallery-nav="prev">← Anterior</button>
+                <span class="gallery-counter">1 / ${photos.length}</span>
+                <button class="btn-outline" type="button" data-gallery-nav="next">Siguiente →</button>
+            </div>
+            <div class="gallery-thumbs">${photos.map((src, i) => `<button class="gallery-thumb ${i === 0 ? 'active' : ''}" type="button" data-gallery-thumb="${i}"><img src="${src}" alt="Foto ${i + 1}"></button>`).join('')}</div>
+        </div>`;
+        const modalEl = modal(`Galería · ${photos.length} foto${photos.length === 1 ? '' : 's'}`, html, [{ label: 'Cerrar', class: 'btn-primary' }]);
+        let current = 0;
+        const stage = modalEl.querySelector('.gallery-stage');
+        const image = modalEl.querySelector('#gallery-current');
+        const counter = modalEl.querySelector('.gallery-counter');
+        const thumbs = Array.from(modalEl.querySelectorAll('[data-gallery-thumb]'));
+        const updateView = (index) => {
+            current = (index + photos.length) % photos.length;
+            image.classList.remove('is-visible');
+            setTimeout(() => {
+                image.src = photos[current];
+                image.alt = `Foto ${current + 1}`;
+                counter.textContent = `${current + 1} / ${photos.length}`;
+                thumbs.forEach((thumb, i) => thumb.classList.toggle('active', i === current));
+                image.classList.add('is-visible');
+            }, 120);
+        };
+        modalEl.querySelector('[data-gallery-nav="prev"]').addEventListener('click', () => updateView(current - 1));
+        modalEl.querySelector('[data-gallery-nav="next"]').addEventListener('click', () => updateView(current + 1));
+        thumbs.forEach(thumb => thumb.addEventListener('click', () => updateView(Number(thumb.dataset.galleryThumb))));
+        image.addEventListener('mouseenter', () => image.classList.add('is-zoomed'));
+        image.addEventListener('mouseleave', () => image.classList.remove('is-zoomed'));
+        updateView(0);
     }
     function photoOrPlaceholder(photos) {
         if (photos && photos.length) return `<img src="${photos[0]}" alt="Foto de la vivienda">`;
         return 'FOTO';
     }
+    function photoClass(photos) { return (photos && photos.length) ? ' has-photo' : ''; }
 
     function reportFlagBadge(p) { return p.reportFlag ? '<span class="badge report-flag">⚠ Reportes múltiples</span>' : ''; }
 
@@ -147,13 +176,13 @@
         const verified = (p.verified && p.owner && p.owner.verified) ? '<span class="badge success">✓ Verificado</span>' : '<span class="badge warning">Pendiente verificación</span>';
         if (mode === 'mini') {
             return `<article class="property-card-mini">
-                <div class="photo-placeholder">${photoOrPlaceholder(p.photos)}</div><div class="content">
+                <div class="photo-placeholder${photoClass(p.photos)}">${photoOrPlaceholder(p.photos)}</div><div class="content">
                 <h3>${safe(p.title)}</h3><p class="small muted">${stars(p.rating)} ${p.rating || 'Nuevo'} (${p.reviewCount} reseñas) · ${p.distance} km</p>
                 <div class="service-list">${services}</div><footer><strong>${money(p.price)}/mes</strong><a class="btn-primary" href="estudiante/detalle.html?id=${p.id}">Ver</a></footer></div></article>`;
         }
         const fav = p.isFavorite ? '♥' : '♡';
         return `<article class="property-card" data-property-id="${p.id}">
-            <div class="photo-placeholder">${photoOrPlaceholder(p.photos)}</div>
+            <div class="photo-placeholder${photoClass(p.photos)}">${photoOrPlaceholder(p.photos)}</div>
             <div class="property-details">${reportFlagBadge(p)}
                 <h3>${safe(p.title)}</h3>
                 <p class="small muted">${stars(p.rating)} ${p.rating || 'Nuevo'} (${p.reviewCount} reseñas) · ${p.distance} km de la ESPE</p>
@@ -198,10 +227,12 @@
     }
 
     async function initCommon() {
+        setTheme(getTheme());
         document.querySelectorAll('[data-logout]').forEach(a => a.addEventListener('click', async e => { e.preventDefault(); try { await api('/api/auth/logout', { method: 'POST' }); } catch (e) {} location.href = path('index.html'); }));
         await loadMe();
         const userBadges = document.querySelectorAll('[data-current-user]');
         if (userBadges.length) userBadges.forEach(el => el.textContent = ME ? ME.name : 'Invitado');
+        renderUserChip();
         refreshMessageBadges();
     }
 
@@ -266,19 +297,15 @@
     function initRegister() {
         let role = 'estudiante';
         const est = byId('campos-estudiante'), arr = byId('campos-arrendador');
-        const universityInput = byId('reg-university');
-        const careerInput = byId('reg-career');
-        function updateRegisterRole(selectedRole) {
-            role = selectedRole;
-            document.querySelectorAll('[data-reg-role]').forEach(b => b.className = 'btn-outline');
-            const activeBtn = document.querySelector(`[data-reg-role="${role}"]`);
-            if (activeBtn) activeBtn.className = 'btn-primary';
+        const uni = byId('reg-university'), career = byId('reg-career');
+        document.querySelectorAll('[data-reg-role]').forEach(btn => btn.addEventListener('click', e => {
+            e.preventDefault(); role = btn.dataset.regRole;
+            document.querySelectorAll('[data-reg-role]').forEach(b => b.className = 'btn-outline'); btn.className = 'btn-primary';
             if (est) est.style.display = role === 'estudiante' ? 'block' : 'none';
             if (arr) arr.style.display = role === 'arrendador' ? 'block' : 'none';
-            if (universityInput) universityInput.required = role === 'estudiante';
-            if (careerInput) careerInput.required = role === 'estudiante';
-        }
-        document.querySelectorAll('[data-reg-role]').forEach(btn => btn.addEventListener('click', e => { e.preventDefault(); updateRegisterRole(btn.dataset.regRole); }));
+            if (uni) uni.required = role === 'estudiante';
+            if (career) career.required = role === 'estudiante';
+        }));
         const form = byId('form-registro');
         if (form) form.addEventListener('submit', async e => {
             e.preventDefault();
@@ -288,22 +315,17 @@
             fd.append('email', byId('reg-email').value.trim());
             fd.append('password', byId('reg-password').value);
             fd.append('phone', byId('reg-phone')?.value.trim() || '');
-            if (role === 'estudiante') {
-                fd.append('university', byId('reg-university').value);
-                fd.append('career', byId('reg-career').value);
-            }
+            if (role === 'estudiante') { fd.append('university', byId('reg-university').value); fd.append('career', byId('reg-career').value); }
             if (role === 'arrendador') {
-                const cedula = byId('reg-doc-cedula')?.files[0];
-                const predial = byId('reg-doc-predial')?.files[0];
-                if (cedula) fd.append('cedula', cedula);
-                if (predial) fd.append('predial', predial);
+                const cedula = byId('reg-doc-cedula')?.files[0]; const predial = byId('reg-doc-predial')?.files[0];
+                if (!cedula || !predial) { toast('Debes adjuntar cédula de identidad y respaldo del inmueble.'); return; }
+                fd.append('cedula', cedula); fd.append('predial', predial);
             }
             try {
                 const r = await api('/api/auth/register', { method: 'POST', body: fd, isForm: true });
                 toast(r.message); setTimeout(() => location.href = 'login.html', 900);
             } catch (err) { toast(err.message); }
         });
-        updateRegisterRole(role);
     }
 
     async function initStudentDashboard() {
@@ -384,11 +406,13 @@
             byId('search-section').style.display = 'none'; byId('favorites-section').style.display = 'none'; byId('profile-section').style.display = 'block';
             const { user: fresh } = await api('/api/auth/me');
             const docs = fresh.docs || {};
-            byId('profile-panel').innerHTML = `<div class="card"><h3>Mi perfil</h3><p class="muted">Correo: ${safe(fresh.email)} (no editable). Universidad: ${safe(fresh.university || '')}</p><div class="form-row"><div class="form-group"><label class="form-label">Nombre</label><input id="profile-name" class="form-control" value="${safe(fresh.name)}"></div><div class="form-group"><label class="form-label">Teléfono</label><input id="profile-phone" class="form-control" value="${safe(fresh.phone || '')}"></div></div><div class="form-group"><label class="form-label">Carrera</label><input id="profile-career" class="form-control" value="${safe(fresh.career || '')}"></div><button class="btn-primary" id="save-profile">Guardar cambios</button></div>
+            byId('profile-panel').innerHTML = `<div class="card"><h3>Mi perfil</h3><p class="muted">Has iniciado sesión como <strong>${safe(fresh.name)}</strong> · Rol: <strong>${ROLE_LABELS.estudiante}</strong></p><p class="muted">Correo: ${safe(fresh.email)} (no editable). Universidad: ${safe(fresh.university || '')}</p><div class="form-row"><div class="form-group"><label class="form-label">Nombre</label><input id="profile-name" class="form-control" value="${safe(fresh.name)}"></div><div class="form-group"><label class="form-label">Teléfono</label><input id="profile-phone" class="form-control" value="${safe(fresh.phone || '')}"></div></div><div class="form-group"><label class="form-label">Carrera</label><input id="profile-career" class="form-control" value="${safe(fresh.career || '')}"></div><button class="btn-primary" id="save-profile">Guardar cambios</button></div>
+            <div class="card" style="margin-top:1rem;">${themeToggleMarkup()}</div>
             <div class="card" style="margin-top:1rem;"><h3>Documentos para formalizar contrato</h3><p class="muted">Matrícula, récord policial y rol de pagos del representante.</p>
             <div class="form-row" style="margin-top:.75rem;"><div class="form-group"><label class="form-label">Matrícula ${docs.matricula ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="doc-matricula" class="form-control" accept="image/*,.pdf"></div><div class="form-group"><label class="form-label">Récord policial ${docs.record ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="doc-record" class="form-control" accept="image/*,.pdf"></div></div>
             <div class="form-group"><label class="form-label">Rol de pagos del representante ${docs.rolPagos ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="doc-rolpagos" class="form-control" accept="image/*,.pdf"></div>
             <button class="btn-outline" id="save-docs" style="margin-top:.5rem;">Guardar documentos</button></div>`;
+            wireThemeToggles(byId('profile-panel'));
             byId('save-profile').onclick = async () => {
                 try { await api('/api/profile', { method: 'PUT', body: { name: byId('profile-name').value, phone: byId('profile-phone').value, career: byId('profile-career').value } }); toast('Perfil actualizado.'); }
                 catch (e) { toast(e.message); }
@@ -416,7 +440,7 @@
         const gallerySide3 = photos[2] ? `<img src="${photos[2]}" alt="Foto 3">` : 'FOTO 3';
         const extraCount = photos.length > 3 ? photos.length - 3 : 0;
         detail.innerHTML = `
-            <section class="detail-gallery" data-gallery-open style="cursor:pointer" title="Ver todas las fotos"><div class="photo-placeholder">${galleryMain}</div><div class="side"><div class="photo-placeholder">${gallerySide2}</div><div class="photo-placeholder" style="position:relative">${gallerySide3}${extraCount > 0 ? `<span class="gallery-more">+${extraCount} fotos</span>` : ''}</div></div></section>
+            <section class="detail-gallery" data-gallery-open style="cursor:pointer" title="Ver todas las fotos"><div class="photo-placeholder${photos[0] ? ' has-photo' : ''}">${galleryMain}</div><div class="side"><div class="photo-placeholder${photos[1] ? ' has-photo' : ''}">${gallerySide2}</div><div class="photo-placeholder${photos[2] ? ' has-photo' : ''}" style="position:relative">${gallerySide3}${extraCount > 0 ? `<span class="gallery-more">+${extraCount} fotos</span>` : ''}</div></div></section>
             <section class="detail-layout">
                 <div>
                     <div class="card" style="margin-bottom:1rem;"><div style="display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;flex-wrap:wrap"><div><h1>${safe(p.title)}</h1><p class="muted">${stars(p.rating)} ${p.rating || 'Nuevo'} (${p.reviewCount} reseñas) · ${p.distance} km del campus</p><p>${safe(p.address)}</p></div><div style="text-align:right"><h2>${money(p.price)}<span class="small muted">/mes</span></h2><button class="btn-outline" data-detail-action="favorite">${p.isFavorite ? '♥ Guardado' : '♡ Guardar'}</button></div></div></div>
@@ -491,39 +515,72 @@
             try {
                 const { conversations } = await api('/api/conversations');
                 if (!list) return;
-                list.innerHTML = conversations.length ? conversations.map(c => `<button type="button" class="conversation-item ${c.id === activeId ? 'active' : ''}" data-open-conv="${c.id}">
-                    <strong>${safe(c.otherName)}</strong> ${c.unread ? '<span class="msg-badge">1</span>' : ''}
-                    <span class="small muted">${safe(c.propertyTitle || '')}</span>
-                    <span class="small">${safe((c.lastMessage || '').slice(0, 60))}</span>
-                </button>`).join('') : '<p class="muted small">Aún no tienes conversaciones.</p>';
-                if (!activeId && conversations.length) activeId = conversations[0].id;
-                if (activeId) renderThread(activeId);
+                if (!conversations.length) {
+                    list.innerHTML = '<p class="muted small">Aún no tienes conversaciones.</p>';
+                    if (thread) thread.innerHTML = '<div class="empty-state"><div><h3>Sin conversaciones</h3><p class="muted">Tu historial aparecerá aquí cuando inicies o recibas mensajes.</p></div></div>';
+                    activeId = null;
+                    return;
+                }
+                const selected = activeId && conversations.some(c => c.id === activeId) ? activeId : conversations[0].id;
+                activeId = selected;
+                list.innerHTML = conversations.map(c => `<button class="conversation-item ${c.id === activeId ? 'active' : ''}" data-open-conv="${c.id}">
+                    <div class="conversation-main">
+                        <strong>${safe(c.otherName)}</strong>
+                        ${c.unread ? '<span class="msg-badge">1</span>' : ''}
+                    </div>
+                    <p class="small muted">${safe(c.propertyTitle || '')}</p>
+                    <p class="small">${safe((c.lastMessage || '').slice(0, 80))}</p>
+                </button>`).join('');
+                if (thread && (!thread.dataset.currentConversation || thread.dataset.currentConversation !== activeId)) {
+                    await renderThread(activeId);
+                }
             } catch (e) { toast('No se pudieron cargar tus conversaciones.'); }
         }
+
         async function renderThread(id) {
             activeId = id;
+            const url = new URL(location.href);
+            url.searchParams.set('c', id);
+            history.replaceState({}, '', `${url.pathname}${url.search}`);
             try {
                 const { conversation, messages } = await api('/api/conversations/' + id);
                 if (!thread) return;
-                thread.innerHTML = `<h3>${safe(conversation.otherName)}</h3><p class="small muted">${safe(conversation.propertyTitle || '')}</p>
-                <div class="message-log" id="message-log">${messages.map(m => `<div class="message-bubble ${m.mine ? 'mine' : ''}"><p>${safe(m.text)}</p><span class="small muted">${m.at}</span></div>`).join('')}</div>
-                <form id="reply-form"><input id="reply-text" class="form-control" placeholder="Escribe una respuesta..."><button class="btn-primary">Enviar</button></form>`;
+                thread.dataset.currentConversation = id;
+                thread.innerHTML = `<div class="chat-thread">
+                    <div class="chat-thread-header">
+                        <h3>${safe(conversation.otherName)}</h3>
+                        <p class="small muted">${safe(conversation.propertyTitle || '')}</p>
+                    </div>
+                    <div class="message-log" id="message-log">${messages.length ? messages.map(m => `<div class="message-bubble ${m.mine ? 'mine' : ''}"><p>${safe(m.text)}</p><span class="message-meta">${safe(m.at)}</span></div>`).join('') : '<p class="muted small">Aún no hay mensajes en esta conversación.</p>'}</div>
+                    <form id="reply-form" class="reply-form">
+                        <input id="reply-text" class="form-control" placeholder="Escribe una respuesta...">
+                        <button class="btn-primary" type="submit">Enviar</button>
+                    </form>
+                </div>`;
                 const log = byId('message-log'); if (log) log.scrollTop = log.scrollHeight;
                 byId('reply-form')?.addEventListener('submit', async e => {
-                    e.preventDefault(); const text = byId('reply-text').value.trim(); if (!text) return;
-                    try { await api(`/api/conversations/${id}/messages`, { method: 'POST', body: { text } }); renderThread(id); refreshMessageBadges(); }
-                    catch (err) { toast(err.message); }
+                    e.preventDefault();
+                    const text = byId('reply-text').value.trim();
+                    if (!text) return;
+                    try {
+                        await api(`/api/conversations/${id}/messages`, { method: 'POST', body: { text } });
+                        await renderThread(id);
+                        await renderList();
+                    } catch (err) { toast(err.message); }
                 });
+                refreshMessageBadges();
             } catch (e) { toast('No se pudo abrir la conversación.'); }
         }
-        list?.addEventListener('click', e => {
+
+        list?.addEventListener('click', async e => {
             const b = e.target.closest('[data-open-conv]');
             if (b) {
-                activeId = b.dataset.openConv;
-                renderList();
+                await renderThread(b.dataset.openConv);
+                await renderList();
             }
         });
-        renderList();
+
+        await renderList();
     }
 
     async function initLandlordDashboard() {
@@ -549,7 +606,7 @@
                 const ownerRating = mine.length ? mine[0].owner.rating : 0;
                 byId('landlord-stats').innerHTML = `<div class="stat-card"><h3>${active}</h3><p>Propiedades activas</p></div><div class="stat-card"><h3>${mine.length}</h3><p>Total publicadas</p></div><div class="stat-card"><h3>${unread}</h3><p>Mensajes sin leer</p></div><div class="stat-card"><h3>${money(monthly)}</h3><p>Ingresos potenciales</p></div><div class="stat-card"><h3>${ownerRating || '—'}</h3><p>Calificación promedio</p></div>`;
                 const list = byId('landlord-properties');
-                list.innerHTML = mine.length ? mine.map(p => `<article class="property-card"><div class="photo-placeholder">${photoOrPlaceholder(p.photos)}</div><div class="property-details"><h3>${safe(p.title)}</h3><p class="small muted">${safe(p.type)} · ${p.distance} km · ${money(p.price)}/mes</p><p>${p.active ? '<span class="badge success">Activo</span>' : '<span class="badge warning">Inactivo</span>'} ${p.verified ? '<span class="badge success">Verificado</span>' : '<span class="badge warning">Pendiente verificación</span>'} ${reportFlagBadge(p)}</p><div class="service-list" style="margin-top:.5rem">${p.services.map(s => `<span class="service-pill">${safe(s)}</span>`).join('')}</div></div><div class="property-actions"><a class="btn-outline" href="publicar.html?id=${p.id}">Editar</a><button class="${p.active ? 'btn-outline' : 'btn-primary'}" data-landlord-action="toggle" data-id="${p.id}">${p.active ? 'Desactivar' : 'Activar'}</button><button class="btn-danger" data-landlord-action="delete" data-id="${p.id}">Eliminar</button></div></article>`).join('') : '<div class="alert info">Aún no tienes propiedades.</div>';
+                list.innerHTML = mine.length ? mine.map(p => `<article class="property-card"><div class="photo-placeholder${photoClass(p.photos)}">${photoOrPlaceholder(p.photos)}</div><div class="property-details"><h3>${safe(p.title)}</h3><p class="small muted">${safe(p.type)} · ${p.distance} km · ${money(p.price)}/mes</p><p>${p.active ? '<span class="badge success">Activo</span>' : '<span class="badge warning">Inactivo</span>'} ${p.verified ? '<span class="badge success">Verificado</span>' : '<span class="badge warning">Pendiente verificación</span>'} ${reportFlagBadge(p)}</p><div class="service-list" style="margin-top:.5rem">${p.services.map(s => `<span class="service-pill">${safe(s)}</span>`).join('')}</div></div><div class="property-actions"><a class="btn-outline" href="publicar.html?id=${p.id}">Editar</a><button class="${p.active ? 'btn-outline' : 'btn-primary'}" data-landlord-action="toggle" data-id="${p.id}">${p.active ? 'Desactivar' : 'Activar'}</button><button class="btn-danger" data-landlord-action="delete" data-id="${p.id}">Eliminar</button></div></article>`).join('') : '<div class="alert info">Aún no tienes propiedades.</div>';
             } catch (e) { toast('No se pudieron cargar tus propiedades.'); }
         }
 
@@ -581,29 +638,20 @@
         }
         async function renderLandlordProfile() {
             const { user: fresh } = await api('/api/auth/me');
-            const docs = fresh.docs || {};
-            let html = `<div class="card"><h3>Mi perfil</h3><p class="muted">Correo: ${safe(fresh.email)} (no editable).</p><div class="form-row"><div class="form-group"><label class="form-label">Nombre</label><input id="lp-name" class="form-control" value="${safe(fresh.name)}"></div><div class="form-group"><label class="form-label">Teléfono</label><input id="lp-phone" class="form-control" value="${safe(fresh.phone || '')}"></div></div><p class="small muted">${fresh.verified ? '✓ Cuenta verificada' : 'Pendiente de verificación por el administrador'}</p><button class="btn-primary" id="lp-save">Guardar cambios</button></div>`;
-            if (!fresh.verified) {
-                html += `<div class="alert warning"><strong>Tu cuenta aún no está verificada.</strong> Sube tus documentos para que un administrador revise tu cuenta.</div>
-                <div class="card" style="margin-top:1rem;"><h3>Documentos pendientes</h3><p class="muted">Adjunta tu cédula de identidad y el predial para completar la verificación.</p>
-                    <div class="form-group"><label class="form-label">Cédula de identidad ${docs.cedula ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="doc-cedula" class="form-control" accept="image/*,.pdf"></div>
-                    <div class="form-group"><label class="form-label">Escritura / predial ${docs.predial ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="doc-predial" class="form-control" accept="image/*,.pdf"></div>
-                    <button class="btn-outline" id="save-verify-docs" style="margin-top:.5rem;">Guardar documentos</button>
-                </div>`;
-            }
-            byId('landlord-profile-panel').innerHTML = html;
-            createProfileThemeToggle(byId('landlord-profile-panel'));
+            byId('landlord-profile-panel').innerHTML = `<div class="card"><h3>Mi perfil</h3><p class="muted">Has iniciado sesión como <strong>${safe(fresh.name)}</strong> · Rol: <strong>${ROLE_LABELS.arrendador}</strong></p><p class="muted">Correo: ${safe(fresh.email)} (no editable).</p><div class="form-row"><div class="form-group"><label class="form-label">Nombre</label><input id="lp-name" class="form-control" value="${safe(fresh.name)}"></div><div class="form-group"><label class="form-label">Teléfono</label><input id="lp-phone" class="form-control" value="${safe(fresh.phone || '')}"></div></div><p class="small muted">${fresh.verified ? '✓ Cuenta verificada' : 'Pendiente de verificación por el administrador'}</p><button class="btn-primary" id="lp-save">Guardar cambios</button></div>
+            <div class="card" style="margin-top:1rem;"><h3>Documentos de verificación</h3><p class="muted">Sube tus documentos para que el administrador revise tu cuenta.</p><div class="form-row" style="margin-top:.75rem;"><div class="form-group"><label class="form-label">Cédula de identidad ${fresh.docs?.cedula ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="lp-doc-cedula" class="form-control" accept="image/*,.pdf"></div><div class="form-group"><label class="form-label">Escritura / predial ${fresh.docs?.predial ? '<span class="badge success">Subida</span>' : '<span class="badge warning">Pendiente</span>'}</label><input type="file" id="lp-doc-predial" class="form-control" accept="image/*,.pdf"></div></div><button class="btn-outline" id="lp-save-docs" style="margin-top:.5rem;">Guardar documentos</button></div>
+            <div class="card" style="margin-top:1rem;">${themeToggleMarkup()}</div>`;
             byId('lp-save').onclick = async () => { try { await api('/api/profile', { method: 'PUT', body: { name: byId('lp-name').value.trim(), phone: byId('lp-phone').value.trim() } }); toast('Perfil actualizado.'); } catch (e) { toast(e.message); } };
-            byId('save-verify-docs')?.addEventListener('click', async () => {
+            byId('lp-save-docs').onclick = async () => {
                 const fd = new FormData();
-                const cedula = byId('doc-cedula')?.files[0];
-                const predial = byId('doc-predial')?.files[0];
-                if (!cedula && !predial) { toast('Selecciona al menos un archivo.'); return; }
+                const cedula = byId('lp-doc-cedula').files[0];
+                const predial = byId('lp-doc-predial').files[0];
                 if (cedula) fd.append('cedula', cedula);
                 if (predial) fd.append('predial', predial);
-                try { await api('/api/profile/docs', { method: 'POST', body: fd, isForm: true }); toast('Documentos enviados.'); renderLandlordProfile(); }
+                try { await api('/api/profile/docs', { method: 'POST', body: fd, isForm: true }); toast('Documentos enviados para revisión.'); renderLandlordProfile(); }
                 catch (e) { toast(e.message); }
-            });
+            };
+            wireThemeToggles(byId('landlord-profile-panel'));
         }
         render();
     }
@@ -694,6 +742,9 @@
     async function initAdmin() {
         const admin = await requireRole('admin'); if (!admin) return;
 
+        byId('admin-profile-panel').innerHTML = `<h3>Mi perfil</h3><p class="muted">Has iniciado sesión como <strong>${safe(admin.name)}</strong> · Rol: <strong>${ROLE_LABELS.admin}</strong></p><p class="muted small">Correo: ${safe(admin.email)}</p><hr style="border:none;border-top:1px solid var(--border-color);margin:1rem 0;">${themeToggleMarkup()}`;
+        wireThemeToggles(byId('admin-profile-panel'));
+
         async function render() {
             try {
                 const [stats, pending, reports, users, log] = await Promise.all([
@@ -708,7 +759,7 @@
 
                 byId('reports-list').innerHTML = reports.reports.length ? reports.reports.map(r => `<div class="report-card"><strong>${safe(r.type)}: ${safe(r.propertyTitle)}</strong> ${r.status === 'pendiente' ? '<span class="badge danger">Pendiente</span>' : '<span class="badge success">Revisado</span>'} ${r.reportCount >= 2 ? `<span class="badge report-flag">⚠ ${r.reportCount} reportes</span>` : ''}<p class="small muted">${safe(r.reason)}</p><div style="display:flex;gap:.5rem;margin-top:.75rem;flex-wrap:wrap"><button class="btn-outline" data-report-action="keep" data-id="${r.id}">Mantener</button><button class="btn-danger" data-report-action="hide" data-id="${r.id}">Ocultar</button><button class="btn-danger" data-report-action="delete" data-id="${r.id}">Eliminar contenido</button></div></div>`).join('') : '<div class="alert info">No hay reportes registrados.</div>';
 
-                byId('users-table').innerHTML = users.users.map(u => `<tr><td>${safe(u.name)}</td><td>${safe(u.role)}</td><td>${u.active ? '<span class="badge success">Activo</span>' : '<span class="badge danger">Inactivo</span>'}</td><td>${u.verified ? '<span class="badge success">Verificado</span>' : '<span class="badge warning">Pendiente</span>'}</td><td style="display:flex;gap:.5rem;flex-wrap:wrap"><button class="btn-outline" data-user-action="toggle" data-id="${u.id}">${u.active ? 'Desactivar' : 'Activar'}</button>${u.role !== 'admin' ? `<button class="btn-danger" data-user-action="delete" data-id="${u.id}">Eliminar</button>` : ''}</td></tr>`).join('');
+                byId('users-table').innerHTML = users.users.map(u => `<tr><td>${safe(u.name)}</td><td>${safe(u.role)}</td><td>${u.active ? '<span class="badge success">Activo</span>' : '<span class="badge danger">Inactivo</span>'}</td><td>${u.role === 'arrendador' ? (u.verified ? '<span class="badge success">Verificado</span>' : '<span class="badge warning">Pendiente</span>') : '<span class="small muted">—</span>'}</td><td style="display:flex;gap:.5rem;flex-wrap:wrap">${u.role === 'arrendador' ? `<button class="btn-outline" data-admin-action="view-docs" data-id="${u.id}">Ver documentos</button>` : ''}<button class="btn-outline" data-user-action="toggle" data-id="${u.id}">${u.active ? 'Desactivar' : 'Activar'}</button>${u.role !== 'admin' ? `<button class="btn-danger" data-user-action="delete" data-id="${u.id}">Eliminar</button>` : ''}</td></tr>`).join('');
 
                 byId('audit-log').innerHTML = log.log.length ? log.log.map(a => `<div class="audit-entry"><strong>${safe(a.action)}</strong> — ${safe(a.target)}<br><span class="small">Motivo: ${safe(a.reason)} · ${safe(a.adminName)} · ${safe(a.at)}</span></div>`).join('') : '<p class="muted small">Aún no hay acciones registradas.</p>';
             } catch (e) { toast('No se pudo cargar el panel de administración.'); }
@@ -719,8 +770,13 @@
             if (docsBtn) {
                 try {
                     const d = await api('/api/admin/users/' + docsBtn.dataset.id + '/docs');
-                    const block = (label, src) => src ? `<div style="margin-bottom:1rem"><strong>${label}</strong><br><img src="${src}" alt="${label}" style="max-width:100%;border-radius:10px;margin-top:.4rem;border:1px solid var(--border-color)"></div>` : `<div style="margin-bottom:1rem"><strong>${label}</strong><p class="small muted">No disponible.</p></div>`;
-                    modal('Documentos de verificación', block('Cédula de identidad', d.cedula) + block('Escritura / predial del inmueble', d.predial), [{ label: 'Cerrar', class: 'btn-primary' }]);
+                    const block = (label, src) => {
+                        if (!src) return `<div style="margin-bottom:1rem"><strong>${label}</strong><p class="small muted">Esta cuenta no tiene ese documento cargado.</p></div>`;
+                        const ext = String(src).split('.').pop()?.toLowerCase();
+                        const isImage = ['png','jpg','jpeg','gif','webp','bmp'].includes(ext || '');
+                        return `<div style="margin-bottom:1rem"><strong>${label}</strong>${isImage ? `<br><img src="${src}" alt="${label}" style="max-width:100%;max-height:70vh;display:block;border-radius:10px;margin-top:.4rem;border:1px solid var(--border-color)">` : `<br><iframe src="${src}" title="${label}" style="width:100%;min-height:70vh;border:1px solid var(--border-color);border-radius:10px;margin-top:.4rem"></iframe><p class="small muted" style="margin-top:.4rem;">Si el PDF no se muestra, ábrelo en una pestaña nueva.</p>`}</div>`;
+                    };
+                    modal('Documentos de verificación', `<div style="max-height:75vh;overflow-y:auto;">${block('Cédula de identidad', d.cedula)}${block('Escritura / predial del inmueble', d.predial)}</div>`, [{ label: 'Cerrar', class: 'btn-primary' }]);
                 } catch (err) { toast(err.message); }
                 return;
             }

@@ -105,7 +105,12 @@ router.delete('/users/:id', (req, res) => {
 router.get('/users/:id/docs', (req, res) => {
   const u = get('SELECT doc_cedula_path, doc_predial_path FROM users WHERE id = ?', [req.params.id]);
   if (!u) return res.status(404).json({ error: 'Usuario no encontrado.' });
-  res.json({ cedula: u.doc_cedula_path, predial: u.doc_predial_path });
+  const normalize = (value) => {
+    if (!value) return null;
+    if (value.startsWith('http://') || value.startsWith('https://')) return value;
+    return value.startsWith('/') ? value : `/${value.replace(/^\\/, '')}`;
+  };
+  res.json({ cedula: normalize(u.doc_cedula_path), predial: normalize(u.doc_predial_path) });
 });
 
 // RF-023: moderación de reportes (mantener, ocultar o eliminar contenido).

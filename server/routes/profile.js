@@ -6,6 +6,12 @@ const { uploadDocs, publicPath } = require('../upload');
 
 const router = express.Router();
 
+function firstFile(files, fieldName) {
+  if (!files) return null;
+  const list = Array.isArray(files) ? files : Object.values(files).flat();
+  return list.find(file => file && file.fieldname === fieldName) || null;
+}
+
 // RF-005: el correo no se puede modificar desde aquí (no se acepta en el body).
 router.put('/', requireAuth, (req, res) => {
   const { name, phone, career } = req.body;
@@ -16,25 +22,20 @@ router.put('/', requireAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// Documentos del estudiante para formalizar el contrato (matrícula, récord policial, rol de pagos).
-router.post('/docs', requireAuth, uploadDocs.fields([
-  { name: 'matricula', maxCount: 1 }, { name: 'record', maxCount: 1 }, { name: 'rolPagos', maxCount: 1 },
-  { name: 'cedula', maxCount: 1 }, { name: 'predial', maxCount: 1 }
-]), (req, res) => {
+// Documentos de verificación para arrendadores y documentos de formalización para estudiantes.
+router.post('/docs', requireAuth, uploadDocs.any(), (req, res) => {
   const sets = [], params = [];
-  const mapping = {
-    matricula: 'doc_matricula_path', record: 'doc_record_path', rolPagos: 'doc_rolpagos_path',
-    cedula: 'doc_cedula_path', predial: 'doc_predial_path'
-  };
-  const allowed = req.user.role === 'arrendador'
-    ? ['cedula', 'predial']
-    : ['matricula', 'record', 'rolPagos'];
-  allowed.forEach(field => {
-    if (req.files[field]) {
-      sets.push(`${mapping[field]} = ?`);
-      params.push(publicPath('docs', req.files[field][0].filename));
-    }
-  });
+  const cedula = firstFile(req.files, 'cedula');
+  const predial = firstFile(req.files, 'predial');
+  const matricula = firstFile(req.files, 'matricula');
+  const record = firstFile(req.files, 'record');
+  const rolPagos = firstFile(req.files, 'rolPagos');
+
+  if (cedula) { sets.push('doc_cedula_path = ?'); params.push(publicPath('docs', cedula.filename)); }
+  if (predial) { sets.push('doc_predial_path = ?'); params.push(publicPath('docs', predial.filename)); }
+  if (matricula) { sets.push('doc_matricula_path = ?'); params.push(publicPath('docs', matricula.filename)); }
+  if (record) { sets.push('doc_record_path = ?'); params.push(publicPath('docs', record.filename)); }
+  if (rolPagos) { sets.push('doc_rolpagos_path = ?'); params.push(publicPath('docs', rolPagos.filename)); }
   if (sets.length) { params.push(req.user.id); run(`UPDATE users SET ${sets.join(', ')} WHERE id = ?`, params); }
   res.json({ ok: true });
 });

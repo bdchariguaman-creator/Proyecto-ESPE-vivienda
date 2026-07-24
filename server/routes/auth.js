@@ -13,7 +13,7 @@ function initials(name) {
 }
 
 // RF-001 / RF-002: registro diferenciado por rol, con validación de campos y de correo duplicado.
-router.post('/register', uploadDocs.fields([{ name: 'cedula', maxCount: 1 }, { name: 'predial', maxCount: 1 }]), (req, res) => {
+router.post('/register', uploadDocs.any(), (req, res) => {
   try {
     const { role, name, email, password, phone, university, career } = req.body;
     if (!['estudiante', 'arrendador'].includes(role)) return res.status(400).json({ error: 'Rol inválido.' });
@@ -29,10 +29,12 @@ router.post('/register', uploadDocs.fields([{ name: 'cedula', maxCount: 1 }, { n
     }
     let cedulaPath = null, predialPath = null;
     if (role === 'arrendador') {
-      const cedulaFile = req.files && req.files.cedula && req.files.cedula[0];
-      const predialFile = req.files && req.files.predial && req.files.predial[0];
-      if (cedulaFile) cedulaPath = publicPath('docs', cedulaFile.filename);
-      if (predialFile) predialPath = publicPath('docs', predialFile.filename);
+      const list = Array.isArray(req.files) ? req.files : Object.values(req.files || {}).flat();
+      const cedulaFile = list.find(file => file && file.fieldname === 'cedula');
+      const predialFile = list.find(file => file && file.fieldname === 'predial');
+      if (!cedulaFile || !predialFile) return res.status(400).json({ error: 'Debes adjuntar cédula de identidad y respaldo del inmueble.' });
+      cedulaPath = publicPath('docs', cedulaFile.filename);
+      predialPath = publicPath('docs', predialFile.filename);
     }
     const newId = id('u');
     run(`INSERT INTO users (id, role, name, email, password_hash, phone, university, career, avatar, active, verified, doc_cedula_path, doc_predial_path)
